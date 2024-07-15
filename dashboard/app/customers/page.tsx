@@ -3,7 +3,7 @@
 import { Container, Grid, Paper, Typography, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, IconButton, Tooltip, Modal, Backdrop, Fade, Box, Fab } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 
 const customersData = [
     { id: 1, name: "John Doe", email: "john.doe@example.com", phone: "123-456-7890" },
@@ -55,11 +55,11 @@ export default function CustomersPage() {
         }
     };
 
-    const handleSort = (property: keyof typeof customersData) => {
+    const handleSort = (property: any) => {
         const isAsc = sortBy === property && sortOrder === 'asc';
         setSortOrder(isAsc ? 'desc' : 'asc');
         setSortBy(property);
-        const sortedCustomers = customers.slice().sort((a, b) => {
+        const sortedCustomers = customers.slice().sort((a:any, b:any) => {
             const aValue = a[property];
             const bValue = b[property];
             if (aValue < bValue) {

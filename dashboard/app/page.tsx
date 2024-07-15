@@ -4,7 +4,6 @@ import { Container, Grid, Paper, Typography, Box, Card, CardContent } from "@mui
 import { Chart } from "react-google-charts";
 import { useEffect, useState } from "react";
 
-// Example chart data
 const data = [
   ["Month", "Sales", "Expenses"],
   ["Jan", 1000, 400],

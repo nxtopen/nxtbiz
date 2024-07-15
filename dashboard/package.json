@@ -9,16 +9,23 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.16.1",
+    "@mui/material": "^5.16.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.408.0",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18",
+    "react-google-charts": "^4.0.1",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

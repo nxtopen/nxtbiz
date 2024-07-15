@@ -1,95 +1,81 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import { Container, Grid, Paper, Typography, Box, Card, CardContent } from "@mui/material";
+import { Chart } from "react-google-charts";
+import { useEffect, useState } from "react";
+
+// Example chart data
+const data = [
+  ["Month", "Sales", "Expenses"],
+  ["Jan", 1000, 400],
+  ["Feb", 1170, 460],
+  ["Mar", 660, 1120],
+  ["Apr", 1030, 540],
+];
+
+const options = {
+  title: "Company Performance",
+  curveType: "function",
+  legend: { position: "bottom" },
+};
+
+export default function Dashboard() {
+  const [userStats, setUserStats] = useState({ users: 0, activeUsers: 0 });
+
+  useEffect(() => {
+    // Fetch user stats from an API or use mock data
+    setUserStats({ users: 1000, activeUsers: 150 });
+  }, []);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Grid container spacing={3}>
+        {/* User Statistics */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ height: "100%" }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>User Statistics</Typography>
+              <Typography variant="body1" gutterBottom>Total Users: {userStats.users}</Typography>
+              <Typography variant="body1" gutterBottom>Active Users: {userStats.activeUsers}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+        {/* Recent Activities */}
+        <Grid item xs={12} md={8}>
+          <Card sx={{ height: "100%" }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Recent Activities</Typography>
+              <Box sx={{ maxHeight: 300, overflow: "auto" }}>
+                <ul style={{ padding: 0 }}>
+                  <li>John Doe signed up</li>
+                  <li>Jane Smith updated profile</li>
+                  <li>Mike Johnson made a purchase</li>
+                  <li>Jennifer Lee posted a comment</li>
+                  <li>David Brown completed a task</li>
+                  <li>...</li>
+                </ul>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+        {/* Performance Chart */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Performance Chart</Typography>
+              <Chart
+                chartType="LineChart"
+                width="100%"
+                height="400px"
+                data={data}
+                options={options}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }

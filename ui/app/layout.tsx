@@ -8,6 +8,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import PeopleIcon from "@mui/icons-material/People";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import theme from "./theme"; // Adjust the path to where your theme file is located
+import Link from 'next/link';
+import ProfileIcon from "@mui/icons-material/AccountCircle";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const drawerWidth = 240;
 
@@ -57,7 +60,7 @@ export default function RootLayout({
                   <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" noWrap>
-                  CRM Platform
+                  NXTBiz Suite
                 </Typography>
               </Toolbar>
             </AppBar>
@@ -112,15 +115,15 @@ export default function RootLayout({
                 </List>
                 <Divider />
                 <List>
-                  <ListItem button>
+                  <ListItem button component={Link} href="/profile">
                     <ListItemIcon>
-                      <PeopleIcon />
+                      <ProfileIcon />
                     </ListItemIcon>
                     <ListItemText primary="Profile" />
                   </ListItem>
-                  <ListItem button>
+                  <ListItem button component={Link} href="/settings">
                     <ListItemIcon>
-                      <PeopleIcon />
+                      <SettingsIcon />
                     </ListItemIcon>
                     <ListItemText primary="Settings" />
                   </ListItem>

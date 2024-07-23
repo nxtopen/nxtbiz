@@ -1,9 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
-const dbConnect = require('../../lib/mongoose');
-const initAdmin = require('../../lib/initAdmin');
-const User = require('../../models/User');
+const dbConnect = require('../lib/mongoose');
+const initAdmin = require('../lib/initAdmin');
+const User = require('../models/User');
 const cookie = require('cookie');
 
 const router = express.Router();

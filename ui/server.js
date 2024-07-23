@@ -1,47 +1,53 @@
+const express = require('express');
 const { createServer } = require('http');
 const { parse } = require('url');
-const express = require('express');
+const next = require('next');
 const path = require('path');
-const process = require('process');
 const chalk = require('chalk');
-const log = console.log;
+const dotenv = require('dotenv');
+dotenv.config();
 
-const newDirectory = path.join(process.cwd(), "ui");
+// Import your API routes
+const authRouter = require('../api/routes/auth');
+const statusRouter = require('../api/routes/status');
+
+const newDirectory = path.join(process.cwd(), 'ui');
 process.chdir(newDirectory);
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
 const port = 3000;
-const app = express();
+const log = console.log;
 
-app.use(express.static(newDirectory));
+const app = next({ dev, hostname, port });
+const handle = app.getRequestHandler();
 
-app.get('/a', (req, res) => {
-  res.sendFile(path.join(newDirectory, 'a.html'));
-});
+app.prepare().then(() => {
+  const server = express();
 
-app.get('/b', (req, res) => {
-  res.sendFile(path.join(newDirectory, 'b.html'));
-});
+  // Middleware to parse JSON requests
+  server.use(express.json());
 
-app.get('*', (req, res) => {
-  const parsedUrl = parse(req.url, true);
-  const { pathname } = parsedUrl;
-  
-  if (pathname === '/') {
-    res.sendFile(path.join(newDirectory, 'index.html'));
-  } else {
-    res.status(404).send('Page not found');
-  }
-});
+  // API routes
+  server.use('/api/auth', authRouter);
+  server.use('/api/status', statusRouter);
 
-const server = createServer(app);
+  server.use(express.static(path.join(__dirname, 'public')))
+  server.use('/_next', express.static(path.join(__dirname, '.next')))
 
-server.on('error', (err) => {
-  console.error(err);
-  process.exit(1);
-});
+  // Handle Next.js requests
+  server.all('*', (req, res) => {
+    const parsedUrl = parse(req.url, true);
+    return handle(req, res, parsedUrl);
+  });
 
-server.listen(port, hostname, () => {
-  log(chalk.green(`>_ Running at http://${hostname}:${port}`));
+  // Create and start the HTTP server
+  createServer(server)
+    .once('error', (err) => {
+      console.error(err);
+      process.exit(1);
+    })
+    .listen(port, () => {
+      log(chalk.green(`>_ Ready on http://${hostname}:${port}`));
+    });
 });

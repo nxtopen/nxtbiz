@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Use the navigation hook from next/navigation
+import { useRouter } from "next/navigation";
 import { Container, Box, TextField, Button, Typography, Paper } from "@mui/material";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [errors, setErrors] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState("");
-  const router = useRouter(); // Initialize the router from next/navigation
+  const router = useRouter();
 
   const validate = () => {
     let tempErrors = { username: "", password: "" };
@@ -23,18 +23,17 @@ export default function LoginPage() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (validate()) {
       try {
-        const res = await fetch("/api/login", {
+        const res = await fetch("/api/auth", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
 
         if (res.ok) {
-          router.push("/"); // Use the router to navigate to the home page
+          router.push("/");
         } else {
           const data = await res.json();
           setLoginError(data.message);
@@ -43,6 +42,11 @@ export default function LoginPage() {
         setLoginError("An error occurred. Please try again.");
       }
     }
+  };
+
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    handleSubmit();
   };
 
   return (
@@ -61,7 +65,7 @@ export default function LoginPage() {
         <Typography component="h1" variant="h5" align="center">
           Login
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component="form" noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
@@ -75,6 +79,7 @@ export default function LoginPage() {
             onChange={handleInputChange}
             error={Boolean(errors.username)}
             helperText={errors.username}
+            // Display validation error message for username
           />
           <TextField
             margin="normal"
@@ -89,6 +94,7 @@ export default function LoginPage() {
             onChange={handleInputChange}
             error={Boolean(errors.password)}
             helperText={errors.password}
+            // Display validation error message for password
           />
           {loginError && (
             <Typography color="error" variant="body2" align="center">
@@ -96,11 +102,12 @@ export default function LoginPage() {
             </Typography>
           )}
           <Button
-            type="submit"
+            type="button"
             fullWidth
             variant="contained"
             color="primary"
             sx={{ mt: 3, mb: 2 }}
+            onClick={handleButtonClick}
           >
             Login
           </Button>

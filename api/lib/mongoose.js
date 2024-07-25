@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const initAdmin = require('./initAdmin'); // Ensure the path is correct
 
 global.mongoose = global.mongoose || { conn: null, promise: null };
 
@@ -20,7 +21,8 @@ const dbConnect = async () => {
             bufferCommands: false,
         };
 
-        cached.promise = mongoose.connect(MONGODB_URI, opts).then(mongoose => {
+        cached.promise = mongoose.connect(MONGODB_URI, opts).then(async (mongoose) => {
+            // await initAdmin(); // Ensure the admin user is initialized here
             return mongoose;
         });
     }

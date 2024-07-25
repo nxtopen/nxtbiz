@@ -2,7 +2,6 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 const dbConnect = require('../lib/mongoose');
-const initAdmin = require('../lib/initAdmin');
 const User = require('../models/User');
 const cookie = require('cookie');
 
@@ -22,9 +21,6 @@ router.get('/', (req, res) => {
 router.post('/', async (req, res) => {
   await dbConnect();
 
-  // Initialize the admin user if no users exist
-  await initAdmin();
-
   const { username, password } = req.body;
 
   // Validate input
@@ -35,16 +31,22 @@ router.post('/', async (req, res) => {
 
   const user = await User.findOne({ username });
 
-  if (user && user.password === password) {
+  if (user && await user.comparePassword(password)) {
     const token = jwt.sign({ username: user.username, role: user.role }, secret, { expiresIn: '1h' });
 
     res.setHeader('Set-Cookie', cookie.serialize('token', token, {
       httpOnly: true,
       maxAge: 60 * 60, // 1 hour in seconds
-      path: '/',
+      path: '/'
     }));
 
-    return res.status(200).json({ message: 'Login successful' });
+    return res.status(200).json({
+      message: 'Login successful',
+      username: user.username,
+      role: user.role,
+      token,
+      profile: user.profile // Return user profile details
+    });
   } else {
     return res.status(401).json({ message: 'Invalid credentials' });
   }

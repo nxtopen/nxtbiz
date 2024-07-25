@@ -1,69 +1,70 @@
-"use client";
+"use client"
+import React, { useState } from 'react';
+import { Button, TextField, CircularProgress, Box, Typography, Container, IconButton, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import axios from '../../lib/axios';
+import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
+import Joi from 'joi';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Container, Box, TextField, Button, Typography, Paper } from "@mui/material";
+const loginSchema = Joi.object({
+  username: Joi.string().alphanum().min(3).max(30).required().messages({
+    'string.empty': 'Username is required',
+    'string.alphanum': 'Username must contain only alphanumeric characters',
+    'string.min': 'Username must be at least 3 characters long',
+    'string.max': 'Username must be less than 30 characters long',
+  }),
+  password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().messages({
+    'string.empty': 'Password is required',
+    'string.pattern.base': 'Password must be between 3 and 30 characters long and contain only alphanumeric characters',
+  }),
+});
 
-export default function LoginPage() {
-  const [formData, setFormData] = useState({ username: "", password: "" });
-  const [errors, setErrors] = useState({ username: "", password: "" });
-  const [loginError, setLoginError] = useState("");
+const LoginPage = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const validate = () => {
-    let tempErrors = { username: "", password: "" };
-    if (!formData.username) tempErrors.username = "Username is required";
-    if (!formData.password) tempErrors.password = "Password is required";
-    setErrors(tempErrors);
-    return Object.values(tempErrors).every(x => x === "");
-  };
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+    const { error: validationError } = loginSchema.validate({ username, password });
 
-  const handleSubmit = async () => {
-    if (validate()) {
-      try {
-        const res = await fetch("/api/auth", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
+    if (validationError) {
+      setError(validationError.details[0].message);
+      setLoading(false);
+      return;
+    }
 
-        if (res.ok) {
-          router.push("/");
-        } else {
-          const data = await res.json();
-          setLoginError(data.message);
-        }
-      } catch (error) {
-        setLoginError("An error occurred. Please try again.");
-      }
+    try {
+      const response = await axios.post('/api/auth', { username, password });
+
+      // Cookies.set('token', response.data.token, { expires: 7 });
+      setLoading(false);
+      router.push('/');
+    } catch (error) {
+      setError(error.response?.data?.message || 'Login failed. Please check your credentials.');
+      setLoading(false);
     }
   };
 
-  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    handleSubmit();
-  };
-
   return (
-    <Container
-      component="main"
-      maxWidth="xs"
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-      }}
-    >
-      <Paper elevation={3} sx={{ p: 4, width: '100%' }}>
-        <Typography component="h1" variant="h5" align="center">
-          Login
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          Sign in
         </Typography>
         <Box component="form" noValidate sx={{ mt: 1 }}>
           <TextField
@@ -75,11 +76,8 @@ export default function LoginPage() {
             name="username"
             autoComplete="username"
             autoFocus
-            value={formData.username}
-            onChange={handleInputChange}
-            error={Boolean(errors.username)}
-            helperText={errors.username}
-            // Display validation error message for username
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -87,32 +85,44 @@ export default function LoginPage() {
             fullWidth
             name="password"
             label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             id="password"
             autoComplete="current-password"
-            value={formData.password}
-            onChange={handleInputChange}
-            error={Boolean(errors.password)}
-            helperText={errors.password}
-            // Display validation error message for password
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
-          {loginError && (
-            <Typography color="error" variant="body2" align="center">
-              {loginError}
+          {error && (
+            <Typography color="error" variant="body2">
+              {error}
             </Typography>
           )}
           <Button
-            type="button"
+            onClick={handleLogin}
             fullWidth
             variant="contained"
-            color="primary"
             sx={{ mt: 3, mb: 2 }}
-            onClick={handleButtonClick}
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size="1rem" /> : null}
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </Button>
         </Box>
-      </Paper>
+      </Box>
     </Container>
   );
-}
+};
+
+export default LoginPage;

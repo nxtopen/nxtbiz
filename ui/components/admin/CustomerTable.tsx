@@ -204,7 +204,7 @@ const CustomerTable: React.FC = () => {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Contact</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

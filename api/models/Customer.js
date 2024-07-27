@@ -7,19 +7,29 @@ const CustomerSchema = new mongoose.Schema({
   },
   lastName: {
     type: String,
-    required: true,
+    default: '', // Allow empty strings
   },
   email: {
     type: String,
-    required: true,
     unique: true,
+    sparse: true, // Allows only one unique value, but not required
   },
   phone: {
     type: String,
+    sparse: true, // Allows only one unique value, but not required
   },
   address: {
     type: String,
+    default: '', // Allow empty strings
   },
+});
+
+// Ensure at least one of email or phone is required
+CustomerSchema.pre('validate', function(next) {
+  if (!this.email && !this.phone) {
+    return next(new Error('Either email or phone is required.'));
+  }
+  next();
 });
 
 module.exports = mongoose.models.Customer || mongoose.model('Customer', CustomerSchema);

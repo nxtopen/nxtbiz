@@ -6,6 +6,8 @@ import axios from '../../lib/axios';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Joi from 'joi';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const loginSchema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required().messages({
@@ -22,21 +24,19 @@ const loginSchema = Joi.object({
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     const { error: validationError } = loginSchema.validate({ username, password });
 
     if (validationError) {
-      setError(validationError.details[0].message);
+      toast.error(validationError.details[0].message); // Show error message with toast
       setLoading(false);
       return;
     }
@@ -47,9 +47,16 @@ const LoginPage = () => {
       // Cookies.set('token', response.data.token, { expires: 7 });
       setLoading(false);
       router.push('/');
-    } catch (error) {
-      setError(error.response?.data?.message || 'Login failed. Please check your credentials.');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Login failed. Please check your credentials.'); // Show error message with toast
       setLoading(false);
+    }
+  };
+
+  // Handle form submission on Enter key press
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.key === 'Enter') {
+      handleLogin(e);
     }
   };
 
@@ -64,9 +71,24 @@ const LoginPage = () => {
         }}
       >
         <Typography component="h1" variant="h5">
-          Sign in
+          Get Started, Sign In!
         </Typography>
-        <Box component="form" noValidate sx={{ mt: 1 }}>
+        <Box
+          component="form"
+          noValidate
+          onKeyDown={handleKeyDown} // Add onKeyDown handler here
+          sx={{
+            mt: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+            maxWidth: 400, // Default width for smaller screens
+            '@media (min-width: 768px)': {
+              maxWidth: 600, // Wider width for larger screens
+            },
+          }}
+        >
           <TextField
             margin="normal"
             required
@@ -104,21 +126,17 @@ const LoginPage = () => {
               ),
             }}
           />
-          {error && (
-            <Typography color="error" variant="body2">
-              {error}
-            </Typography>
-          )}
-          <Button
-            onClick={handleLogin}
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={loading}
-            startIcon={loading ? <CircularProgress size="1rem" /> : null}
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', mt: 3 }}>
+            <Button
+              onClick={handleLogin}
+              variant="contained"
+              sx={{ width: '100%' }}
+              disabled={loading}
+              startIcon={loading ? <CircularProgress size="1rem" /> : null}
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Container>

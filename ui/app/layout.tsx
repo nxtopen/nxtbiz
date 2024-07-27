@@ -2,15 +2,11 @@
 
 import { useState } from "react";
 import { ThemeProvider, CssBaseline, Box, Toolbar, IconButton, AppBar, Drawer, List, ListItem, ListItemIcon, ListItemText, Typography, Divider } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import HomeIcon from "@mui/icons-material/Home";
-import PeopleIcon from "@mui/icons-material/People";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import theme from "./theme"; // Adjust the path to where your theme file is located
-import Link from 'next/link';
-import ProfileIcon from "@mui/icons-material/AccountCircle";
-import SettingsIcon from "@mui/icons-material/Settings";
+import theme from "./theme";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './globals.css';
+import { FaHome, FaTachometerAlt, FaUsers, FaUser, FaCog, FaChevronLeft, FaBars } from 'react-icons/fa'; // Import react-icons
 
 const drawerWidth = 240;
 
@@ -57,7 +53,7 @@ export default function RootLayout({
                   onClick={handleDrawerToggle}
                   sx={{ mr: 2, ...(drawerOpen && { display: "none" }) }}
                 >
-                  <MenuIcon />
+                  <FaBars /> {/* Use react-icons */}
                 </IconButton>
                 <Typography variant="h6" noWrap>
                   NXTBiz Suite
@@ -87,7 +83,7 @@ export default function RootLayout({
                 }}
               >
                 <IconButton onClick={handleDrawerToggle}>
-                  <ChevronLeftIcon />
+                  <FaChevronLeft /> {/* Use react-icons */}
                 </IconButton>
               </Box>
               <Divider />
@@ -95,35 +91,34 @@ export default function RootLayout({
                 <List>
                   <ListItem button>
                     <ListItemIcon>
-                      <HomeIcon />
+                      <FaHome /> {/* Use react-icons */}
                     </ListItemIcon>
                     <ListItemText primary="Home" />
                   </ListItem>
                   <ListItem button>
                     <ListItemIcon>
-                      <DashboardIcon />
+                      <FaTachometerAlt /> {/* Use react-icons */}
                     </ListItemIcon>
                     <ListItemText primary="Dashboard" />
                   </ListItem>
                   <ListItem button>
                     <ListItemIcon>
-                      <PeopleIcon />
+                      <FaUsers /> {/* Use react-icons */}
                     </ListItemIcon>
                     <ListItemText primary="Customers" />
                   </ListItem>
-                  {/* Add more items here */}
                 </List>
                 <Divider />
                 <List>
-                  <ListItem button component={Link} href="/profile">
+                  <ListItem button component="a" href="/profile">
                     <ListItemIcon>
-                      <ProfileIcon />
+                      <FaUser /> {/* Use react-icons */}
                     </ListItemIcon>
                     <ListItemText primary="Profile" />
                   </ListItem>
-                  <ListItem button component={Link} href="/settings">
+                  <ListItem button component="a" href="/settings">
                     <ListItemIcon>
-                      <SettingsIcon />
+                      <FaCog /> {/* Use react-icons */}
                     </ListItemIcon>
                     <ListItemText primary="Settings" />
                   </ListItem>
@@ -153,6 +148,7 @@ export default function RootLayout({
               {children}
             </Box>
           </Box>
+          <ToastContainer />
         </body>
       </html>
     </ThemeProvider>

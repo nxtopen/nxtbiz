@@ -1,150 +1,146 @@
 "use client";
 
 import { useState } from "react";
-import { ThemeProvider, CssBaseline, Box, Toolbar, IconButton, AppBar, Drawer, List, ListItem, ListItemIcon, ListItemText, Typography, Divider } from "@mui/material";
+import { usePathname } from 'next/navigation';
+import { ThemeProvider, CssBaseline, Box, Toolbar, IconButton, AppBar, Typography, Modal, Grid, Card, CardContent } from "@mui/material";
 import theme from "./theme";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './globals.css';
-import { FaHome, FaTachometerAlt, FaUsers, FaUser, FaCog, FaChevronLeft, FaBars } from 'react-icons/fa'; // Import react-icons
+import { FaHome, FaTachometerAlt, FaUsers, FaUser, FaCog } from 'react-icons/fa';
+import { CgMenuGridO } from "react-icons/cg"; // Import the new icon
 
-const drawerWidth = 240;
+const menuItems = [
+  { icon: FaHome, label: "Home", link: "/" },
+  { icon: FaTachometerAlt, label: "Dashboard", link: "/dashboard" },
+  { icon: FaUsers, label: "Customers", link: "/customers" },
+  { icon: FaUser, label: "Profile", link: "/profile" },
+  { icon: FaCog, label: "Settings", link: "/settings" },
+];
+
+const popupWidth = 300;
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const pathname = usePathname();
+  const [popupOpen, setPopupOpen] = useState(false);
 
-  const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
+  const handlePopupToggle = () => {
+    setPopupOpen(!popupOpen);
   };
+
+  const isLoginRoute = pathname === '/login';
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <html lang="en">
         <body>
-          <Box sx={{ display: "flex" }}>
-            <AppBar
-              position="fixed"
+          <Box sx={{ display: "flex", flexDirection: 'column', height: '100vh' }}>
+            {!isLoginRoute && (
+              <AppBar
+                position="fixed"
+                sx={{
+                  zIndex: (theme) => theme.zIndex.drawer + 1,
+                  bgcolor: '#4679b4', // More pronounced blue tint with transparency
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+                  borderBottom: '#4679b4', // Deeper blue border
+                }}
+              >
+                <Toolbar>
+                  <IconButton
+                    color="inherit"
+                    aria-label="open popup"
+                    edge="start"
+                    onClick={handlePopupToggle}
+                    sx={{ mr: 2 }}
+                  >
+                    <CgMenuGridO />
+                  </IconButton>
+                  <Typography variant="h6" noWrap>
+                    NXTBiz Suite
+                  </Typography>
+                </Toolbar>
+              </AppBar>
+            )}
+            <Modal
+              open={popupOpen}
+              onClose={handlePopupToggle}
+              aria-labelledby="popup-menu"
+              aria-describedby="popup-menu-description"
               sx={{
-                zIndex: (theme) => theme.zIndex.drawer + 1,
-                transition: theme.transitions.create(["width", "margin"], {
-                  easing: theme.transitions.easing.sharp,
-                  duration: theme.transitions.duration.leavingScreen,
-                }),
-                ...(drawerOpen && {
-                  marginLeft: drawerWidth,
-                  width: `calc(100% - ${drawerWidth}px)`,
-                  transition: theme.transitions.create(["width", "margin"], {
-                    easing: theme.transitions.easing.sharp,
-                    duration: theme.transitions.duration.enteringScreen,
-                  }),
-                }),
-              }}
-            >
-              <Toolbar>
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  edge="start"
-                  onClick={handleDrawerToggle}
-                  sx={{ mr: 2, ...(drawerOpen && { display: "none" }) }}
-                >
-                  <FaBars /> {/* Use react-icons */}
-                </IconButton>
-                <Typography variant="h6" noWrap>
-                  NXTBiz Suite
-                </Typography>
-              </Toolbar>
-            </AppBar>
-            <Drawer
-              variant="persistent"
-              anchor="left"
-              open={drawerOpen}
-              sx={{
-                width: drawerWidth,
-                flexShrink: 0,
-                "& .MuiDrawer-paper": {
-                  width: drawerWidth,
-                  boxSizing: "border-box",
-                },
+                display: 'flex',
+                alignItems: { xs: 'flex-end', sm: 'center' },
+                justifyContent: 'center',
+                backdropFilter: 'blur(5px)',
               }}
             >
               <Box
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'flex-end',
-                  px: 1,
-                  ...theme.mixins.toolbar,
+                  width: { xs: '100%', sm: 'auto' },
+                  bgcolor: 'rgba(255, 255, 255, 0.8)',
+                  borderRadius: 2,
+                  boxShadow: 24,
+                  p: 2, // Reduced padding for the modal content
+                  outline: 'none',
+                  backdropFilter: 'blur(5px)',
                 }}
               >
-                <IconButton onClick={handleDrawerToggle}>
-                  <FaChevronLeft /> {/* Use react-icons */}
-                </IconButton>
+                <Grid container spacing={1}>
+                  {menuItems.map((item, index) => (
+                    <Grid item xs={12} sm={4} key={index}>
+                      <Card
+                        sx={{
+                          display: 'flex',
+                          flexDirection: { xs: 'row', sm: 'column' },
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          textAlign: 'center',
+                          height: { xs: 'auto', sm: '100%' },
+                          p: 1, // Reduced padding for the card content
+                          textDecoration: 'none',
+                          '&:hover': {
+                            textDecoration: 'none',
+                          }
+                        }}
+                        component="a"
+                        href={item.link}
+                      >
+                        <CardContent
+                          sx={{
+                            display: 'flex',
+                            flexDirection: { xs: 'row', sm: 'column' },
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            p: 0, // Removed padding for the card content
+                            '&:last-child': {
+                              paddingBottom: 0, // Ensure no extra padding at the bottom
+                            }
+                          }}
+                        >
+                          <item.icon size={24} />
+                          <Typography variant="body2" sx={{ mt: { sm: 1, xs: 0 }, ml: { xs: 1, sm: 0 } }}>
+                            {item.label}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
               </Box>
-              <Divider />
-              <Box sx={{ overflow: "auto" }}>
-                <List>
-                  <ListItem button>
-                    <ListItemIcon>
-                      <FaHome /> {/* Use react-icons */}
-                    </ListItemIcon>
-                    <ListItemText primary="Home" />
-                  </ListItem>
-                  <ListItem button>
-                    <ListItemIcon>
-                      <FaTachometerAlt /> {/* Use react-icons */}
-                    </ListItemIcon>
-                    <ListItemText primary="Dashboard" />
-                  </ListItem>
-                  <ListItem button>
-                    <ListItemIcon>
-                      <FaUsers /> {/* Use react-icons */}
-                    </ListItemIcon>
-                    <ListItemText primary="Customers" />
-                  </ListItem>
-                </List>
-                <Divider />
-                <List>
-                  <ListItem button component="a" href="/profile">
-                    <ListItemIcon>
-                      <FaUser /> {/* Use react-icons */}
-                    </ListItemIcon>
-                    <ListItemText primary="Profile" />
-                  </ListItem>
-                  <ListItem button component="a" href="/settings">
-                    <ListItemIcon>
-                      <FaCog /> {/* Use react-icons */}
-                    </ListItemIcon>
-                    <ListItemText primary="Settings" />
-                  </ListItem>
-                </List>
-              </Box>
-            </Drawer>
+            </Modal>
             <Box
               component="main"
               sx={{
                 flexGrow: 1,
                 p: 3,
-                transition: theme.transitions.create("margin", {
-                  easing: theme.transitions.easing.sharp,
-                  duration: theme.transitions.duration.leavingScreen,
-                }),
-                marginLeft: `-${drawerWidth}px`,
-                ...(drawerOpen && {
-                  transition: theme.transitions.create("margin", {
-                    easing: theme.transitions.easing.easeOut,
-                    duration: theme.transitions.duration.enteringScreen,
-                  }),
-                  marginLeft: 0,
-                }),
+                mt: { xs: 6, sm: 8 }, // Adjust margin-top to ensure content is below AppBar
               }}
             >
-              <Toolbar />
               {children}
             </Box>
           </Box>

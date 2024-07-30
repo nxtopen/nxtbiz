@@ -6,7 +6,7 @@ const theme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#009688',
+      main: '#4B4AE0',
       light: '#33b1a6',
       dark: '#00675b',
       contrastText: '#ffffff',
@@ -87,11 +87,11 @@ const theme = createTheme({
       styleOverrides: {
         h1: {
           fontWeight: 700,
-          color: '#009688',
+          color: '#4B4AE0',
         },
         h2: {
           fontWeight: 600,
-          color: '#009688',
+          color: '#4B4AE0',
         },
         body1: {
           color: '#333333',

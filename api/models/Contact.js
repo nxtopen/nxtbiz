@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
-const CustomerSchema = new mongoose.Schema({
+const ContactSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ['customer', 'lead'],
+    required: true,
+  },
   firstName: {
     type: String,
     required: true,
@@ -22,14 +27,14 @@ const CustomerSchema = new mongoose.Schema({
     type: String,
     default: '', // Allow empty strings
   },
-});
+}, { timestamps: true }); // Add timestamps option
 
 // Ensure at least one of email or phone is required
-CustomerSchema.pre('validate', function(next) {
+ContactSchema.pre('validate', function(next) {
   if (!this.email && !this.phone) {
     return next(new Error('Either email or phone is required.'));
   }
   next();
 });
 
-module.exports = mongoose.models.Customer || mongoose.model('Customer', CustomerSchema);
+module.exports = mongoose.models.Contact || mongoose.model('Contact', ContactSchema);

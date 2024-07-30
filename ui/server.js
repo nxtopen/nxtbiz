@@ -7,7 +7,7 @@ const next = require('next');
 const path = require('path');
 const chalk = require('chalk');
 const cookieParser = require('cookie-parser');
-const authMiddleware = require('../api/lib/auth'); // Ensure the path is correct
+const authMiddleware = require('../api/lib/auth');
 
 const initAdmin = require('../api/lib/initAdmin')
 initAdmin()
@@ -15,7 +15,8 @@ initAdmin()
 // Import your API routes
 const authRouter = require('../api/routes/auth');
 const statusRouter = require('../api/routes/status');
-const customerRouter = require('../api/routes/customer');
+const contactRouter = require('../api/routes/contact');
+const invoiceRouter = require('../api/routes/invoice');
 
 const newDirectory = path.join(process.cwd(), 'ui');
 process.chdir(newDirectory);
@@ -41,7 +42,8 @@ app.prepare().then(() => {
   // API routes
   server.use('/api/auth', authRouter);
   server.use('/api/status', statusRouter);
-  server.use('/api/customers', customerRouter);
+  server.use('/api/contacts', contactRouter);
+  server.use('/api/invoices', invoiceRouter);
 
   server.use(express.static(path.join(__dirname, 'public')))
   server.use('/_next', express.static(path.join(__dirname, '.next')))

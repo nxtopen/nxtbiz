@@ -191,10 +191,10 @@ const CustomerTable: React.FC = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={handleSearchKeyDown}
           placeholder="Press Enter to search"
-          style={{ width: '300px' }}
+          style={{ width: '250px' }}
         />
         <Button variant="contained" color="primary" onClick={() => setOpenAddDialog(true)}>
-          <VscAdd /> Add Customer
+          <VscAdd /> New
         </Button>
       </div>
 
